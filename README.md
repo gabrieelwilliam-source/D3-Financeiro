@@ -305,8 +305,6 @@
         <p>📞 +55 47 9776-8710</p>
       </div>
       <div class="footer-right">
-        <img src="WhatsApp Image 2025-11-02 at 09.53.40-Photoroom.png" alt="D3 Financeiro Logo">
-        <p>D3 Financeiro<br>Facilidade para crescer</p>
       </div>
     </div>
     <div class="footer-bottom">
