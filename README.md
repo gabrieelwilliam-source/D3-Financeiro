@@ -297,6 +297,7 @@
   <footer>
     <div class="footer-content">
       <div class="footer-left">
+        <h3>Gostaria de conhecer mais?</h3>
         <h4>Entre em contato</h4>
         <p><strong>BPO Financeiro</strong></p>
         <p><em>Facilidade para crescer</em></p>
