@@ -291,7 +291,6 @@
   </section>
 
   <section class="contact" id="contato">
-    <h3>Entre em contato</h3>
     <a href="https://wa.me/554797768710" target="_blank" class="whatsapp-button">Entrar em contato</a>
   </section>
 
