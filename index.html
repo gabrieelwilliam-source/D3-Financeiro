@@ -4,183 +4,249 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>D3 Financeiro - Facilidade para crescer</title>
+
   <style>
-   @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 
-body {
-  margin: 0;
-  font-family: 'Poppins', sans-serif;
-  background: radial-gradient(circle at top right, #00ffb3 0%, #0b0e10 60%);
-  color: #ffffff;
-  overflow-x: hidden;
-}
+    /* ------------------------------
+       ESTILO BASE E FUNDO ANIMADO
+    ------------------------------ */
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      color: #ffffff;
+      overflow-x: hidden;
+      background: linear-gradient(-45deg, #00ffb3, #0b0e10, #00ffb3, #0b0e10);
+      background-size: 400% 400%;
+      animation: gradientMove 12s ease infinite;
+    }
 
-/* HEADER */
-header {
-  text-align: center;
-  padding: 80px 20px;
-}
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
 
-.logo {
-  width: 180px;
-  margin-bottom: 20px;
-}
+    /* ------------------------------
+       HEADER
+    ------------------------------ */
+    header {
+      text-align: center;
+      padding: 80px 20px;
+    }
 
-h1 {
-  font-size: 48px;
-  color: #17fcb4;
-  margin-bottom: 10px;
-}
+    .logo {
+      width: 180px;
+      margin-bottom: 20px;
+    }
 
-h2 {
-  font-size: 22px;
-  font-weight: 400;
-  color: #e0e0e0;
-}
+    h1 {
+      font-size: 48px;
+      color: #17fcb4;
+      margin-bottom: 10px;
+    }
 
-.cta button {
-  background-color: #17fcb4;
-  color: #0d0f10;
-  border: none;
-  padding: 15px 30px;
-  border-radius: 8px;
-  font-size: 18px;
-  cursor: pointer;
-  transition: 0.3s;
-}
+    h2 {
+      font-size: 22px;
+      font-weight: 400;
+      color: #e0e0e0;
+      max-width: 700px;
+      margin: 0 auto 30px;
+      line-height: 1.4;
+    }
 
-.cta button:hover {
-  background-color: #00d796;
-}
+    .cta button {
+      background-color: #17fcb4;
+      color: #0d0f10;
+      border: none;
+      padding: 15px 40px;
+      border-radius: 8px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: 0.3s;
+      box-shadow: 0 0 15px #00ffb370;
+    }
 
-/* ABOUT */
-.about {
-  background-color: #111418;
-  padding: 60px 20px;
-  text-align: center;
-}
+    .cta button:hover {
+      background-color: #00d796;
+      transform: scale(1.05);
+    }
 
-.title-with-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-}
+    /* ------------------------------
+       SEÇÃO SOBRE (ABOUT)
+    ------------------------------ */
+    .about {
+      background-color: rgba(17, 20, 24, 0.9);
+      padding: 60px 20px;
+      text-align: center;
+    }
 
-.title-with-icon .icon {
-  width: 40px;
-  height: 40px;
-}
+    .about-text h3 {
+      color: #17fcb4;
+      font-size: 30px;
+      margin: 0;
+    }
 
-.about-text h3 {
-  color: #17fcb4;
-  font-size: 28px;
-  margin: 0;
-}
+    .about-text p {
+      max-width: 600px;
+      margin: 20px auto;
+      line-height: 1.6;
+      color: #dcdcdc;
+    }
 
-.about-text p {
-  max-width: 600px;
-  margin: 20px auto;
-}
+    /* ------------------------------
+       BENEFÍCIOS
+    ------------------------------ */
+    .benefits {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+      background-color: rgba(13, 15, 16, 0.9);
+      padding: 60px 20px;
+    }
 
-/* BENEFITS */
-.benefits {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 30px;
-  background-color: #0d0f10;
-  padding: 60px 20px;
-}
+    .benefit {
+      flex: 1 1 250px;
+      max-width: 280px;
+      background-color: #111418;
+      padding: 25px;
+      border-radius: 12px;
+      transition: 0.3s;
+      box-sizing: border-box;
+      text-align: center;
+      box-shadow: 0 0 10px rgba(23, 252, 180, 0.1);
+    }
 
-.benefit {
-  max-width: 250px;
-  background-color: #111418;
-  padding: 25px;
-  border-radius: 10px;
-  transition: 0.3s;
-}
+    .benefit:hover {
+      background-color: #00ffb31a;
+      transform: translateY(-5px);
+      box-shadow: 0 0 15px rgba(23, 252, 180, 0.3);
+    }
 
-.benefit:hover {
-  background-color: #00ffb31a;
-}
+    .benefit h4 {
+      color: #17fcb4;
+      margin-bottom: 10px;
+      font-size: 20px;
+    }
 
-.benefit h4 {
-  color: #17fcb4;
-}
+    /* ------------------------------
+       CONTATO
+    ------------------------------ */
+    .contact {
+      text-align: center;
+      padding: 80px 20px;
+      background-color: rgba(17, 20, 24, 0.9);
+    }
 
-/* CONTACT */
-.contact {
-  text-align: center;
-  padding: 80px 20px;
-  background-color: #111418;
-}
+    .contact h3 {
+      color: #17fcb4;
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
 
-.contact h3 {
-  color: #17fcb4;
-  font-size: 28px;
-  margin-bottom: 20px;
-}
+    .whatsapp-button {
+      background-color: #25D366;
+      color: #fff;
+      border: none;
+      padding: 16px 40px;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: 0.3s;
+      display: inline-block;
+      box-shadow: 0 0 10px rgba(37, 211, 102, 0.3);
+    }
 
-.whatsapp-button {
-  background-color: #25D366;
-  color: #fff;
-  border: none;
-  padding: 16px 30px;
-  border-radius: 8px;
-  font-size: 18px;
-  font-weight: 600;
-  cursor: pointer;
-  text-decoration: none;
-  transition: 0.3s;
-}
+    .whatsapp-button:hover {
+      background-color: #1eb85a;
+      transform: scale(1.05);
+    }
 
-.whatsapp-button:hover {
-  background-color: #1eb85a;
-}
+    /* ------------------------------
+       RODAPÉ
+    ------------------------------ */
+    footer {
+      text-align: center;
+      padding: 60px 20px;
+      background-color: #0b0e10;
+      color: #aaa;
+      font-size: 14px;
+    }
 
-/* FOOTER */
-footer {
-  text-align: center;
-  padding: 60px 20px;
-  background-color: #0b0e10;
-  color: #aaa;
-  font-size: 14px;
-}
+    footer a {
+      color: #17fcb4;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
 
-.footer-info p {
-  margin: 6px 0;
-}
+    footer a:hover {
+      color: #00ffb3;
+    }
 
-.copy {
-  margin-top: 30px;
-  font-size: 13px;
-  color: #666;
-}
+    .copyright {
+      margin-top: 25px;
+      font-size: 13px;
+      color: #777;
+    }
+
+    /* ------------------------------
+       RESPONSIVIDADE
+    ------------------------------ */
+    @media (max-width: 1024px) {
+      h1 { font-size: 40px; }
+      h2 { font-size: 20px; }
+      .benefit { max-width: 45%; }
+    }
+
+    @media (max-width: 768px) {
+      header { padding: 60px 15px; }
+      h1 { font-size: 32px; }
+      h2 { font-size: 18px; }
+      .benefit { max-width: 80%; }
+      .cta button { width: 80%; font-size: 16px; }
+      .about-text h3, .contact h3 { font-size: 24px; }
+      footer { padding: 40px 15px; }
+    }
+
+    @media (max-width: 480px) {
+      .logo { width: 130px; }
+      h1 { font-size: 26px; }
+      h2 { font-size: 16px; }
+      .cta button { width: 100%; }
+      .benefit { max-width: 100%; }
+      .contact h3 { font-size: 20px; }
+      footer { font-size: 12px; }
+    }
 
   </style>
 </head>
+
 <body>
-
-  <div class="bubble"></div>
-  <div class="bubble"></div>
-  <div class="bubble"></div>
-
+  <!-- HEADER -->
   <header>
-    <img src="WhatsApp Image 2025-11-02 at 09.53.40-Photoroom.png" alt="Logo D3 Financeiro">
+    <img class="logo" src="WhatsApp Image 2025-11-02 at 09.53.40-Photoroom.png" alt="Logo D3 Financeiro">
     <h2>Está sem tempo para suas finanças? Nós cuidamos disso para você!</h2>
     <div class="cta">
-      <button onclick="document.getElementById('contato').scrollIntoView({behavior: 'smooth'})">Quero saber mais</button>
+      <button onclick="document.getElementById('contato').scrollIntoView({behavior: 'smooth'})">
+        Quero saber mais
+      </button>
     </div>
   </header>
 
+  <!-- SOBRE -->
   <section class="about">
     <div class="about-text">
       <h3>Facilidade para crescer</h3>
-      <p>Deixe suas rotinas financeiras conosco e tenha tempo para focar na visão do seu negócio. A D3 Financeiro é especialista em BPO Financeiro — nós otimizamos processos, garantimos organização e facilitamos o seu crescimento.</p>
+      <p>Deixe suas rotinas financeiras conosco e tenha tempo para focar na visão do seu negócio. 
+         A D3 Financeiro é especialista em BPO Financeiro — nós otimizamos processos, garantimos 
+         organização e facilitamos o seu crescimento.</p>
     </div>
   </section>
 
+  <!-- BENEFÍCIOS -->
   <section class="benefits">
     <div class="benefit">
       <h4>Mais tempo</h4>
@@ -196,26 +262,26 @@ footer {
     </div>
   </section>
 
+  <!-- CONTATO -->
   <section class="contact" id="contato">
-    <h3>Gostaria de saber mais ?</h3>
-    <a href="https://wa.me/554797768710" target="_blank" class="whatsapp-button">Entrar em contato</a>
+    <h3>Gostaria de saber mais?</h3>
+    <a href="https://wa.me/554797768710" target="_blank" class="whatsapp-button">
+      Entrar em contato
+    </a>
   </section>
 
+  <!-- RODAPÉ -->
   <footer>
     <div class="footer-left">
       <h4>BPO Financeiro</h4>
-      <p><h4><strong>Facilidade para crescer</strong></p></h4>
-      <p><h4>📧 adm@d3financeiro.com.br</p></h4>
-      <p><h4>📞 +55 47 9776-8710</p></h4>
+      <p><strong>Facilidade para crescer</strong></p>
+      <p>📧 <a href="mailto:adm@d3financeiro.com.br">adm@d3financeiro.com.br</a></p>
+      <p>📞 <a href="https://wa.me/554797768710" target="_blank">+55 47 9776-8710</a></p>
     </div>
-    <div class="footer-right">
-      <div class="brand-text">
-      </div>
-    </div>
+
     <div class="copyright">
       © 2025 D3 Financeiro — Todos os direitos reservados.
     </div>
   </footer>
-
 </body>
 </html>
