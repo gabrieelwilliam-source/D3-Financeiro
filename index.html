@@ -1,287 +1,543 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>D3 Financeiro - Facilidade para crescer</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>D3 Financeiro — Facilidade para crescer</title>
+
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <meta name="theme-color" content="#0e1f26">
 
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
-
-    /* ------------------------------
-       ESTILO BASE E FUNDO ANIMADO
-    ------------------------------ */
-    body {
-      margin: 0;
-      font-family: 'Poppins', sans-serif;
-      color: #ffffff;
-      overflow-x: hidden;
-      background: linear-gradient(-45deg, #00ffb3, #0b0e10, #00ffb3, #0b0e10);
-      background-size: 400% 400%;
-      animation: gradientMove 12s ease infinite;
+    :root{
+      --teal:#22ffc4;
+      --deep:#0e1f26;
+      --dark:#2e2e2e;
+      --muted:#cbd6d6;
+      --glass: rgba(255,255,255,0.03);
+      --card-shadow: 0 10px 30px rgba(14,31,38,0.5);
+      --radius:12px;
     }
 
-    @keyframes gradientMove {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+    /* Reset / base */
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:'Open Sans',system-ui,-apple-system,Segoe UI,Roboto,Arial; background: linear-gradient(135deg,var(--deep),var(--dark)); color: #fff; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale}
+    a{color:inherit;text-decoration:none}
+    img{max-width:100%;height:auto;display:block}
+
+    /* Canvas background */
+    #bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none}
+
+    /* Layout */
+    .site{position:relative;z-index:5;min-height:100vh;display:flex;flex-direction:column}
+    .container{max-width:1200px;margin:0 auto;padding:0 20px}
+
+    /* Header / hero */
+    header{padding:24px 0;display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .brand{display:flex;align-items:center;gap:14px}
+    .brand img{width:110px;height:auto;filter: drop-shadow(0 6px 20px rgba(34,255,196,0.08))}
+    .brand h1{font-size:20px;margin:0;color:var(--teal);letter-spacing:0.2px}
+    .nav{display:flex;gap:18px;align-items:center}
+    .nav a{color:var(--muted);font-weight:600;font-size:14px}
+    .cta-top{background:var(--teal);color:var(--deep);padding:10px 16px;border-radius:10px;font-weight:700;border:none;cursor:pointer;box-shadow:0 8px 26px rgba(34,255,196,0.12)}
+
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:center;padding:28px 0}
+    .hero-left{padding:28px;border-radius:var(--radius);background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:var(--card-shadow);backdrop-filter: blur(4px)}
+    .kicker{color:var(--teal);font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
+    .hero-title{font-size:34px;color:#fff;margin:0 0 12px;line-height:1.08}
+    .hero-sub{color:var(--muted);margin:0 0 18px;line-height:1.5}
+    .cta-row{display:flex;gap:12px;flex-wrap:wrap}
+    .btn-primary{background:var(--teal);color:var(--deep);padding:12px 18px;border-radius:12px;border:0;font-weight:700;cursor:pointer;box-shadow:0 18px 40px rgba(34,255,196,0.10)}
+    .btn-ghost{background:transparent;border:2px solid rgba(255,255,255,0.06);padding:12px 16px;border-radius:10px;color:var(--muted);cursor:pointer}
+
+    .hero-right{display:flex;flex-direction:column;gap:14px;align-items:stretch}
+    .card{background:var(--glass);padding:18px;border-radius:12px;box-shadow:0 12px 30px rgba(10,10,10,0.45)}
+    .card h3{margin:0;color:var(--teal);font-size:16px}
+    .card ul{margin:12px 0 0 18px;padding:0;color:var(--muted);line-height:1.6}
+
+    /* sections */
+    section{padding:36px 0}
+    .who{display:flex;gap:24px;align-items:center;flex-wrap:wrap}
+    .who .photo{width:180px;border-radius:12px;overflow:hidden;flex-shrink:0;border:4px solid rgba(34,255,196,0.06);box-shadow:0 12px 30px rgba(0,0,0,0.5)}
+    .who .bio h3{margin:0;color:var(--teal);font-size:20px}
+    .who .bio p{color:var(--muted);line-height:1.6}
+
+    .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px}
+    .step{background:var(--dark);padding:18px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.45);text-align:center}
+    .step svg{width:48px;height:48px;margin-bottom:10px;display:block;margin-left:auto;margin-right:auto}
+    .step h4{color:var(--teal);margin:8px 0 6px}
+    .step p{color:var(--muted);font-size:14px;line-height:1.5}
+
+    .services-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:18px}
+    .service-card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:18px;border-radius:12px;border-left:4px solid rgba(34,255,196,0.06)}
+    .service-card h4{margin:0;color:var(--teal)}
+    .service-card p{color:var(--muted);margin-top:8px;font-size:14px}
+
+    .essence-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:18px}
+    .essence-card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:16px;border-radius:12px;border-left:4px solid rgba(34,255,196,0.08)}
+    .essence-card h4{margin:0 0 8px;color:var(--teal)}
+    .essence-card p{color:var(--muted);font-size:14px;line-height:1.6}
+
+    .diff-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:18px}
+    .diff-card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:12px;border-left:4px solid rgba(34,255,196,0.06)}
+    .diff-card h4{margin:0 0 8px;color:var(--teal)}
+    .diff-card p{color:var(--muted);font-size:14px}
+
+    .benefits-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:18px}
+    .benefit{background:var(--deep);padding:14px;border-radius:10px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.45)}
+    .benefit strong{display:block;color:var(--teal);margin-bottom:6px}
+
+    .testimonials{background:linear-gradient(90deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));padding:18px;border-radius:12px;box-shadow:var(--card-shadow)}
+    .testimonial{display:flex;gap:14px;align-items:flex-start;padding:12px 0;border-bottom:1px dashed rgba(255,255,255,0.03)}
+    .testimonial:last-child{border-bottom:0}
+    .testimonial .ava{width:56px;height:56px;border-radius:999px;background:rgba(255,255,255,0.03);display:flex;align-items:center;justify-content:center;color:var(--teal);font-weight:700}
+    .testimonial p{margin:0;color:var(--muted);line-height:1.5}
+
+    .contact-wrap{display:flex;gap:18px;align-items:center;justify-content:space-between;padding:18px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));box-shadow:var(--card-shadow)}
+    .contact-left h3{margin:0;color:var(--teal);font-size:20px}
+    .contact-left p{color:var(--muted);margin-top:6px}
+    .contact-actions{display:flex;gap:12px;align-items:center}
+    .btn-whatsapp{background:#25D366;padding:12px 18px;border-radius:10px;color:#fff;font-weight:700;border:0;cursor:pointer;box-shadow:0 10px 30px rgba(37,211,102,0.12)}
+    .btn-mail{background:transparent;border:2px solid rgba(255,255,255,0.06);padding:10px 14px;border-radius:10px;color:var(--muted)}
+
+    footer{padding:28px 0;margin-top:24px;border-top:1px solid rgba(255,255,255,0.03)}
+    .footer-inner{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+    .socials a{display:inline-block;margin-left:8px;color:var(--muted);font-weight:600}
+
+    /* Responsive */
+    @media (max-width:1000px){
+      .hero{grid-template-columns:1fr}
+      .hero-right{order:2}
+      .who{flex-direction:column;align-items:flex-start}
+      .steps{grid-template-columns:repeat(1,1fr)}
+      .services-grid{grid-template-columns:repeat(1,1fr)}
+      .essence-grid{grid-template-columns:repeat(1,1fr)}
+      .diff-grid{grid-template-columns:repeat(1,1fr)}
+      .benefits-grid{grid-template-columns:repeat(2,1fr)}
+    }
+    @media (max-width:520px){
+      header{padding:18px 0}
+      .brand h1{font-size:16px}
+      .hero-title{font-size:26px}
+      .hero-sub{font-size:14px}
+      .benefits-grid{grid-template-columns:repeat(1,1fr)}
+      .footer-inner{flex-direction:column;align-items:flex-start}
     }
 
-    /* ------------------------------
-       HEADER
-    ------------------------------ */
-    header {
-      text-align: center;
-      padding: 80px 20px;
-    }
-
-    .logo {
-      width: 180px;
-      margin-bottom: 20px;
-    }
-
-    h1 {
-      font-size: 48px;
-      color: #17fcb4;
-      margin-bottom: 10px;
-    }
-
-    h2 {
-      font-size: 22px;
-      font-weight: 400;
-      color: #e0e0e0;
-      max-width: 700px;
-      margin: 0 auto 30px;
-      line-height: 1.4;
-    }
-
-    .cta button {
-      background-color: #17fcb4;
-      color: #0d0f10;
-      border: none;
-      padding: 15px 40px;
-      border-radius: 8px;
-      font-size: 18px;
-      cursor: pointer;
-      transition: 0.3s;
-      box-shadow: 0 0 15px #00ffb370;
-    }
-
-    .cta button:hover {
-      background-color: #00d796;
-      transform: scale(1.05);
-    }
-
-    /* ------------------------------
-       SEÇÃO SOBRE (ABOUT)
-    ------------------------------ */
-    .about {
-      background-color: rgba(17, 20, 24, 0.9);
-      padding: 60px 20px;
-      text-align: center;
-    }
-
-    .about-text h3 {
-      color: #17fcb4;
-      font-size: 30px;
-      margin: 0;
-    }
-
-    .about-text p {
-      max-width: 600px;
-      margin: 20px auto;
-      line-height: 1.6;
-      color: #dcdcdc;
-    }
-
-    /* ------------------------------
-       BENEFÍCIOS
-    ------------------------------ */
-    .benefits {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 30px;
-      background-color: rgba(13, 15, 16, 0.9);
-      padding: 60px 20px;
-    }
-
-    .benefit {
-      flex: 1 1 250px;
-      max-width: 280px;
-      background-color: #111418;
-      padding: 25px;
-      border-radius: 12px;
-      transition: 0.3s;
-      box-sizing: border-box;
-      text-align: center;
-      box-shadow: 0 0 10px rgba(23, 252, 180, 0.1);
-    }
-
-    .benefit:hover {
-      background-color: #00ffb31a;
-      transform: translateY(-5px);
-      box-shadow: 0 0 15px rgba(23, 252, 180, 0.3);
-    }
-
-    .benefit h4 {
-      color: #17fcb4;
-      margin-bottom: 10px;
-      font-size: 20px;
-    }
-
-    /* ------------------------------
-       CONTATO
-    ------------------------------ */
-    .contact {
-      text-align: center;
-      padding: 80px 20px;
-      background-color: rgba(17, 20, 24, 0.9);
-    }
-
-    .contact h3 {
-      color: #17fcb4;
-      font-size: 28px;
-      margin-bottom: 20px;
-    }
-
-    .whatsapp-button {
-      background-color: #25D366;
-      color: #fff;
-      border: none;
-      padding: 16px 40px;
-      border-radius: 8px;
-      font-size: 18px;
-      font-weight: 600;
-      cursor: pointer;
-      text-decoration: none;
-      transition: 0.3s;
-      display: inline-block;
-      box-shadow: 0 0 10px rgba(37, 211, 102, 0.3);
-    }
-
-    .whatsapp-button:hover {
-      background-color: #1eb85a;
-      transform: scale(1.05);
-    }
-
-    /* ------------------------------
-       RODAPÉ
-    ------------------------------ */
-    footer {
-      text-align: center;
-      padding: 60px 20px;
-      background-color: #0b0e10;
-      color: #aaa;
-      font-size: 14px;
-    }
-
-    footer a {
-      color: #17fcb4;
-      text-decoration: none;
-      transition: color 0.3s;
-    }
-
-    footer a:hover {
-      color: #00ffb3;
-    }
-
-    .copyright {
-      margin-top: 25px;
-      font-size: 13px;
-      color: #777;
-    }
-
-    /* ------------------------------
-       RESPONSIVIDADE
-    ------------------------------ */
-    @media (max-width: 1024px) {
-      h1 { font-size: 40px; }
-      h2 { font-size: 20px; }
-      .benefit { max-width: 45%; }
-    }
-
-    @media (max-width: 768px) {
-      header { padding: 60px 15px; }
-      h1 { font-size: 32px; }
-      h2 { font-size: 18px; }
-      .benefit { max-width: 80%; }
-      .cta button { width: 80%; font-size: 16px; }
-      .about-text h3, .contact h3 { font-size: 24px; }
-      footer { padding: 40px 15px; }
-    }
-
-    @media (max-width: 480px) {
-      .logo { width: 130px; }
-      h1 { font-size: 26px; }
-      h2 { font-size: 16px; }
-      .cta button { width: 100%; }
-      .benefit { max-width: 100%; }
-      .contact h3 { font-size: 20px; }
-      footer { font-size: 12px; }
-    }
-
+    /* helpers */
+    .muted{color:var(--muted);font-size:14px}
+    .spacer{height:10px}
   </style>
 </head>
-
 <body>
-  <!-- HEADER -->
-  <header>
-    <img class="logo" src="WhatsApp Image 2025-11-02 at 09.53.40-Photoroom.png" alt="Logo D3 Financeiro">
-    <h2>Está sem tempo para suas finanças? Nós cuidamos disso para você!</h2>
-    <div class="cta">
-      <button onclick="document.getElementById('contato').scrollIntoView({behavior: 'smooth'})">
-        Quero saber mais
-      </button>
-    </div>
-  </header>
+  <canvas id="bg-canvas" aria-hidden="true"></canvas>
 
-  <!-- SOBRE -->
-  <section class="about">
-    <div class="about-text">
-      <h3>Facilidade para crescer</h3>
-      <p>Deixe suas rotinas financeiras conosco e tenha tempo para focar na visão do seu negócio. 
-         A D3 Financeiro é especialista em BPO Financeiro — nós otimizamos processos, garantimos 
-         organização e facilitamos o seu crescimento.</p>
-    </div>
-  </section>
+  <div class="site">
+    <div class="container">
 
-  <!-- BENEFÍCIOS -->
-  <section class="benefits">
-    <div class="benefit">
-      <h4>Mais tempo</h4>
-      <p>Deixe a parte financeira conosco e dedique-se ao que realmente importa: o crescimento da sua empresa.</p>
-    </div>
-    <div class="benefit">
-      <h4>Redução de custos</h4>
-      <p>Evite erros e gastos desnecessários com um controle profissional e estratégico das suas finanças.</p>
-    </div>
-    <div class="benefit">
-      <h4>Gestão eficiente</h4>
-      <p>Com relatórios claros e organização total, você tem a visão completa do seu negócio em um só lugar.</p>
-    </div>
-  </section>
+      <!-- header -->
+      <header role="banner">
+        <div class="brand" aria-label="D3 Financeiro">
+          <img src="Design sem nome (1)-Photoroom.png" alt="Logo D3 Financeiro">
+          <div>
+            <h1>D3Financeiro</h1>
+            <div class="muted">Facilidade para crescer</div>
+          </div>
+        </div>
 
-  <!-- CONTATO -->
-  <section class="contact" id="contato">
-    <h3>Gostaria de saber mais?</h3>
-    <a href="https://wa.me/554797768710" target="_blank" class="whatsapp-button">
-      Entrar em contato
-    </a>
-  </section>
+        <nav class="nav" aria-label="Navegação principal">
+          <a href="#servicos">Serviços</a>
+          <a href="#como-funciona">Como funciona</a>
+          <a href="#depoimentos">Depoimentos</a>
+          <button class="cta-top" onclick="document.getElementById('contato').scrollIntoView({behavior:'smooth'})">Quero simplificar</button>
+        </nav>
+      </header>
 
-  <!-- RODAPÉ -->
-  <footer>
-    <div class="footer-left">
-      <h4>BPO Financeiro</h4>
-      <p><strong>Facilidade para crescer</strong></p>
-      <p>📧 <a href="mailto:adm@d3financeiro.com.br">adm@d3financeiro.com.br</a></p>
-      <p>📞 <a href="https://wa.me/554797768710" target="_blank">+55 47 9776-8710</a></p>
-    </div>
+      <!-- hero -->
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-left card">
+          <div class="kicker">BPO Financeiro</div>
+          <h2 id="hero-title" class="hero-title">Soluções inteligentes para empresas que crescem</h2>
+          <p class="hero-sub">Organizamos contas, automatizamos processos e entregamos relatórios claros — tudo para você tomar decisões seguras e crescer com tranquilidade.</p>
 
-    <div class="copyright">
-      © 2025 D3 Financeiro — Todos os direitos reservados.
+          <div class="cta-row">
+            <button class="btn-primary" onclick="document.getElementById('contato').scrollIntoView({behavior:'smooth'})">Quero simplificar minhas finanças</button>
+            <button class="btn-ghost" onclick="openProposal()">Baixar proposta</button>
+          </div>
+
+          <div class="spacer"></div>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <div style="background:rgba(255,255,255,0.02);padding:10px;border-radius:10px;text-align:center;min-width:120px">
+              <div style="font-weight:700;color:var(--teal);font-size:18px">+50%</div>
+              <div class="muted">Eficiência</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.02);padding:10px;border-radius:10px;text-align:center;min-width:120px">
+              <div style="font-weight:700;color:var(--teal);font-size:18px">Redução</div>
+              <div class="muted">de custos</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.02);padding:10px;border-radius:10px;text-align:center;min-width:120px">
+              <div style="font-weight:700;color:var(--teal);font-size:18px">100%</div>
+              <div class="muted">Processos digitais</div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="hero-right">
+          <div class="card">
+            <h3>O que entregamos</h3>
+            <ul>
+              <li>Contas a pagar e receber</li>
+              <li>Conciliação bancária e automações</li>
+              <li>Emissão de notas e controle de fluxo</li>
+              <li>Relatórios gerenciais e planejamento</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>Atendimento</h3>
+            <p class="muted">Equipe remota com foco em resultados. Atendimento personalizado para PMEs e startups em todo o Brasil.</p>
+          </div>
+        </aside>
+      </section>
+
+      <!-- Nossa Essência (acima da foto -> como pediu) -->
+      <!-- Nossa Essência + Quem Somos (ajustado lado a lado) -->
+<section id="essencia">
+  <h3 style="color:var(--teal);text-align:center;margin-bottom:16px;">Nossa Essência</h3>
+  <div class="essence-grid">
+    <div class="essence-card">
+      <h4>Missão</h4>
+      <p class="muted">Transformar dados em soluções inteligentes, oferecendo uma gestão financeira descomplicada, eficiente e estratégica.</p>
     </div>
-  </footer>
+    <div class="essence-card">
+      <h4>Visão</h4>
+      <p class="muted">Ser referência nacional em BPO Financeiro, unindo tecnologia e atendimento humanizado para impulsionar o crescimento de empresas em todo o país.</p>
+    </div>
+    <div class="essence-card">
+      <h4>Valores</h4>
+      <p class="muted">Transparência, ética, comprometimento, inovação e foco no cliente são os pilares que sustentam o nosso trabalho diário.</p>
+    </div>
+  </div>
+
+  <!-- Quem somos -->
+  <div class="who" style="margin-top:36px; display:flex; align-items:center; justify-content:space-between; gap:36px; flex-wrap:wrap;">
+    <div class="photo" style="flex:0 0 280px; border-radius:12px; overflow:hidden; border:4px solid rgba(34,255,196,0.08); box-shadow:0 12px 30px rgba(0,0,0,0.5);">
+      <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=800&auto=format&fit=crop" alt="Foto da fundadora" style="width:100%;height:auto;display:block;">
+    </div>
+    <div class="bio" style="flex:1; min-width:210px;">
+      <h3 style="color:var(--teal);margin-top:0;">Facilidade para crescer</h3>
+      <p class="muted">A D3 Financeiro nasceu para simplificar a rotina financeira das empresas. Nosso foco é otimizar processos, garantir clareza nas informações e oferecer mais tempo para o empreendedor cuidar do que realmente importa: o crescimento do seu negócio.</p>
+      <p class="muted">Com tecnologia, método e atendimento humanizado, transformamos o financeiro em um aliado estratégico — leve, seguro e confiável.</p>
+      <p class="muted"><strong>Dilamara</strong> — BPO Financeiro</p>
+    </div>
+  </div>
+</section>
+
+
+      <!-- Como funciona -->
+      <section id="como-funciona" aria-labelledby="como-title">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap">
+          <div>
+            <h3 id="como-title" style="color:var(--teal);margin:0 0 8px">Como funciona</h3>
+            <p class="muted" style="max-width:680px">Processo simples, transparente e orientado a resultado. Trabalhamos com integração de sistemas, automações e conferência humana para garantir precisão.</p>
+          </div>
+        </div>
+
+        <div class="steps">
+          <div class="step">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 12h18" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M6 6h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            <h4>Análise</h4>
+            <p>Analisamos seu fluxo atual, sistemas e necessidades para montar um plano sob medida.</p>
+          </div>
+          <div class="step">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.4"/><path d="M8 12h8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            <h4>Organização</h4>
+            <p>Padronizamos processos, conciliamos e automatizamos rotinas financeiras.</p>
+          </div>
+          <div class="step">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 12h18" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M12 3v18" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            <h4>Resultados</h4>
+            <p>Entregamos relatórios acionáveis e indicadores para decisões mais seguras.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Serviços (completo) -->
+      <section id="servicos">
+        <h3 style="color:var(--teal);margin:0 0 12px">Soluções inteligentes</h3>
+        <p class="muted" style="max-width:700px">Serviços pensados para reduzir custos, evitar retrabalho e acelerar o ciclo de informação financeira.</p>
+
+        <div class="services-grid">
+          <div class="service-card">
+            <h4>Contas a Receber</h4>
+            <p class="muted">Controle de recebíveis, cobrança e gestão de fluxo.</p>
+          </div>
+
+          <div class="service-card">
+            <h4>Contas a Pagar</h4>
+            <p class="muted">Rotinas de pagamentos, agendamento e controle de compromissos.</p>
+          </div>
+
+          <div class="service-card">
+            <h4>Emissão de Notas Fiscais</h4>
+            <p class="muted">Emissão padronizada e acompanhamento fiscal.</p>
+          </div>
+
+          <div class="service-card">
+            <h4>Emissão de Boletos</h4>
+            <p class="muted">Geração, registro e conferência de boletos.</p>
+          </div>
+
+          <div class="service-card">
+            <h4>Agendamento de Pagamentos</h4>
+            <p class="muted">Processos para evitar atrasos e multas.</p>
+          </div>
+
+          <div class="service-card">
+            <h4>Conciliação Bancária</h4>
+            <p class="muted">Conferência automática e redução de divergências.</p>
+          </div>
+
+          <div class="service-card">
+            <h4>Relatórios Financeiros</h4>
+            <p class="muted">Relatórios gerenciais para tomada de decisão.</p>
+          </div>
+
+          <div class="service-card">
+            <h4>Integrações & Automação</h4>
+            <p class="muted">Conectamos suas ferramentas para gerar economia e rapidez de execução.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Propósito e Diferenciais -->
+      <section id="prop-diff">
+        <h3 style="color:var(--teal);margin:0 0 12px">Propósito e Diferenciais</h3>
+
+        <div class="card" style="margin-bottom:16px">
+          <h4>Propósito</h4>
+          <p class="muted">Por ser um serviço externo e remoto, você pode focar exclusivamente no seu negócio, sem se preocupar com as rotinas administrativas. Tornamos a gestão financeira leve, precisa e acessível.</p>
+        </div>
+
+        <div class="diff-grid">
+          <div class="diff-card">
+            <h4>Atendimento Personalizado</h4>
+            <p class="muted">Cada cliente recebe acompanhamento individual, com soluções adaptadas ao porte e às metas do negócio.</p>
+          </div>
+          <div class="diff-card">
+            <h4>Automação Inteligente</h4>
+            <p class="muted">Integramos sistemas e automatizamos processos para eliminar falhas e aumentar a produtividade.</p>
+          </div>
+          <div class="diff-card">
+            <h4>Acompanhamento Consultivo</h4>
+            <p class="muted">Atuação estratégica que orienta decisões com base em dados reais.</p>
+          </div>
+          <div class="diff-card">
+            <h4>Transparência e Confiança</h4>
+            <p class="muted">Priorizamos clareza em todos os processos, garantindo segurança e confiabilidade nas informações.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Benefícios -->
+      <section aria-labelledby="benef-title">
+        <h3 id="benef-title" style="color:var(--teal);margin:0 0 12px">Benefícios reais</h3>
+        <div class="benefits-grid">
+          <div class="benefit"><strong>Mais tempo</strong><span class="muted">Foque no crescimento enquanto cuidamos do operacional.</span></div>
+          <div class="benefit"><strong>Redução de custos</strong><span class="muted">Menos erros, menos retrabalho e melhor planejamento.</span></div>
+          <div class="benefit"><strong>Eficiência</strong><span class="muted">Processos otimizados e automações inteligentes.</span></div>
+          <div class="benefit"><strong>Clareza</strong><span class="muted">Relatórios simples que ajudam a decidir.</span></div>
+        </div>
+      </section>
+
+      <!-- Depoimentos -->
+      <section id="depoimentos">
+        <h3 style="color:var(--teal);margin:0 0 12px">Depoimentos</h3>
+        <div class="testimonials">
+          <div class="testimonial">
+            <div class="ava">RC</div>
+            <div>
+              <strong style="color:#fff">Roberto C.</strong>
+              <p class="muted">"A D3 organizou nosso financeiro e reduziu o tempo gasto em conciliações. Hoje temos informações confiáveis para crescer."</p>
+            </div>
+          </div>
+
+          <div class="testimonial">
+            <div class="ava">MA</div>
+            <div>
+              <strong style="color:#fff">Mariana A.</strong>
+              <p class="muted">"Profissionalismo e transparência. Recomendo para empresas que precisam escalar sem perder controle."</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Contato / CTA final (form + whatsapp) -->
+      <section id="contato">
+        <div class="card contact-wrap">
+          <div class="contact-left">
+            <h3>Vamos transformar sua gestão financeira?</h3>
+            <p class="muted">Agende uma conversa e receba uma proposta personalizada.</p>
+          </div>
+
+          <div class="contact-actions">
+            <a class="btn-whatsapp" href="https://wa.me/554797768710" target="_blank" rel="noopener noreferrer">Abrir WhatsApp</a>
+            <button class="btn-mail" onclick="openMail()">Enviar e-mail</button>
+          </div>
+        </div>
+
+        <div style="margin-top:16px;" class="card">
+          <h3 style="color:var(--teal);margin:0 0 10px">Fale conosco</h3>
+          <form id="contactForm" onsubmit="handleContact(event)" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <input name="name" placeholder="Seu nome*" required style="padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:#fff"/>
+            <input name="email" type="email" placeholder="Seu e-mail*" required style="padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:#fff"/>
+            <input name="phone" placeholder="Telefone" style="padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:#fff"/>
+            <select name="service" style="padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:#fff">
+              <option value="">Serviço de interesse</option>
+              <option>Contas a Pagar/Receber</option>
+              <option>Conciliação</option>
+              <option>Relatórios</option>
+              <option>Consultoria</option>
+            </select>
+            <textarea name="message" placeholder="Mensagem" rows="4" style="grid-column:1 / -1;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:#fff"></textarea>
+            <div style="grid-column:1 / -1;display:flex;gap:10px;justify-content:flex-end">
+              <button type="submit" class="btn-primary">Enviar mensagem</button>
+              <button type="button" class="btn-ghost" onclick="document.getElementById('contactForm').reset()">Limpar</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- Rodapé -->
+      <footer>
+        <div class="footer-inner">
+          <div>
+            <img src="Design sem nome (1)-Photoroom.png" alt="Logo" style="width:110px;margin-bottom:8px">
+            <div class="muted">📧 <a href="mailto:adm@d3financeiro.com.br">adm@d3financeiro.com.br</a> &nbsp; • &nbsp; 📞 <a href="https://wa.me/554797768710" target="_blank">+55 47 9776-8710</a></div>
+          </div>
+
+          <div class="socials">
+            <div class="muted">Siga-nos: </div>
+            <a href="https://instagram.com/d3financeiro" target="_blank">@d3financeiro</a>
+            <a href="https://linkedin.com" target="_blank">LinkedIn</a>
+          </div>
+        </div>
+
+        <div style="margin-top:18px" class="muted">© <span id="year"></span> D3 Financeiro — Todos os direitos reservados.</div>
+      </footer>
+
+    </div>
+  </div>
+
+  <script>
+    // year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // mail helper
+    function openMail(){
+      window.location.href = 'mailto:adm@d3financeiro.com.br?subject=Contato%20via%20site%20D3Financeiro';
+    }
+
+    // open proposal
+    function openProposal(){
+      const url = 'D3 APRESENTAÇÃO.pdf';
+      fetch(url, {method:'HEAD'}).then(r=>{
+        if(r.ok) window.open(url,'_blank');
+        else alert('Proposta não encontrada no servidor. Coloque o arquivo "D3 APRESENTAÇÃO.pdf" na mesma pasta do site.');
+      }).catch(()=>{ alert('Proposta não encontrada localmente.'); });
+    }
+
+    // simple form handler (placeholder - replace with real endpoint)
+    function handleContact(e){
+      e.preventDefault();
+      const f = e.target;
+      const data = new FormData(f);
+      // aqui: enviar via fetch para seu endpoint, zapier, etc.
+      alert('Mensagem enviada — obrigado! Iremos responder em breve.');
+      f.reset();
+    }
+
+    // Canvas animated background - particles + glow
+    (function(){
+      const canvas = document.getElementById('bg-canvas');
+      if(!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let DPR = Math.max(window.devicePixelRatio||1,1);
+
+      function resize(){
+        canvas.width = innerWidth * DPR;
+        canvas.height = innerHeight * DPR;
+        canvas.style.width = innerWidth + 'px';
+        canvas.style.height = innerHeight + 'px';
+        ctx.setTransform(DPR,0,0,DPR,0,0);
+      }
+      window.addEventListener('resize',resize);
+      resize();
+
+      const particles = [];
+      function init(){
+        particles.length = 0;
+        const count = Math.max(18, Math.floor((innerWidth+innerHeight)/140));
+        for(let i=0;i<count;i++){
+          particles.push({
+            x: Math.random()*innerWidth,
+            y: Math.random()*innerHeight,
+            vx: (Math.random()-0.5)*0.3,
+            vy: (Math.random()-0.5)*0.3,
+            r: Math.random()*2+0.8,
+            alpha: Math.random()*0.6+0.2
+          });
+        }
+      }
+      init();
+
+      function draw(){
+        ctx.clearRect(0,0,innerWidth,innerHeight);
+        // radial glow
+        const gx = ctx.createRadialGradient(innerWidth*0.78, innerHeight*0.42, 50, innerWidth*0.78, innerHeight*0.42, innerWidth*0.9);
+        gx.addColorStop(0, 'rgba(34,255,196,0.06)');
+        gx.addColorStop(1, 'rgba(14,31,38,0)');
+        ctx.fillStyle = gx;
+        ctx.fillRect(0,0,innerWidth,innerHeight);
+
+        // lines
+        for(let i=0;i<particles.length;i++){
+          for(let j=i+1;j<particles.length;j++){
+            const a = particles[i], b = particles[j];
+            const dx = a.x-b.x, dy = a.y-b.y;
+            const d = Math.sqrt(dx*dx+dy*dy);
+            if(d < 120){
+              ctx.beginPath();
+              ctx.moveTo(a.x,a.y);
+              ctx.lineTo(b.x,b.y);
+              ctx.strokeStyle = 'rgba(34,255,196,'+(0.06*(1-d/120))+')';
+              ctx.lineWidth = 0.7;
+              ctx.stroke();
+            }
+          }
+        }
+
+        // points
+        for(const p of particles){
+          ctx.beginPath();
+          ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+          ctx.fillStyle = 'rgba(34,255,196,'+p.alpha+')';
+          ctx.fill();
+          p.x += p.vx; p.y += p.vy;
+          if(p.x < -10) p.x = innerWidth+10;
+          if(p.x > innerWidth+10) p.x = -10;
+          if(p.y < -10) p.y = innerHeight+10;
+          if(p.y > innerHeight+10) p.y = -10;
+        }
+
+        requestAnimationFrame(draw);
+      }
+
+      const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+      if(!mq.matches) draw();
+      window.addEventListener('resize', () => { init(); });
+    })();
+  </script>
 </body>
 </html>
